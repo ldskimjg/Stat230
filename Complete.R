@@ -115,3 +115,12 @@ interaction.plot(wear$filler,wear$prop,wear$wear1)
 
 wear.lm <- lm(wear1 ~ prop + filler + prop*filler, data = wear)
 anova(wear.lm)
+
+cancer <- read.table(file = "cancer.txt", header = TRUE)
+cancer
+
+interaction.plot(cancer$type,cancer$gender,log(cancer$days))
+interaction.plot(cancer$gender, cancer$type,log(cancer$days))
+
+cancer.lm <- lm(log(days) ~ type + gender + type*gender, data = cancer)
+anova(cancer.lm)
