@@ -30,10 +30,15 @@ anova(pop.lm2)
 anova(pop.lm2.1)
 
 
-
+# What does cbind do? + matrix
 smallfish <- cbind( c(5.4, 5.2, 6.1, 4.8, 5.0, 4.8, 3.9, 4.0, 4.8, 5.4, 4.9, 5.7),
                     c(1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3))
+smallfish
 smallfish.1 <- c(5.4, 5.2, 6.1, 4.8, 5.0, 4.8, 3.9, 4.0, 4.8, 5.4, 4.9, 5.7,1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3)
+smallfish.1
+
+smallfish[1,1]
+tapply(smallfish[,1], smallfish[,2], mean)
 
 
 # Master HW question #58
@@ -44,8 +49,10 @@ mean(schizo)
 length(schi)
 length(norm)
 
-library(tidyverse)
+mydata <- data.frame(condition = c(rep("schizo",20),rep("normal",20)), response = c(schi,norm))
+mydata
 
+library(tidyverse)
 mydata <- tibble(schi, norm) %>% gather() %>% rename(condition = key, response = value)
 mydata
 # If you didn't do gather or rename
@@ -70,3 +77,41 @@ library(car)
 singer.lm2 <- lm(height ~ gender + part + gender*part, data = singer, 
                  contrasts = list(gender = contr.sum, part = contr.sum))
 Anova(singer.lm2, type = "III")
+
+# power.anova.test, HW question 60
+nint <- c(2:20)
+
+#(a)
+powerA <- power.anova.test(groups = 4, between.var = var(c(21,23,25,27)),within.var=4.7^2, n = nint)
+plot(nint,powerA$power)
+plot(nint,powerA$power, type ="l")
+plot(nint,powerA$power, type ="l", col = "purple", lwd=4, ylim = c(0,1))
+plot(nint,powerA$power, type ="l", col = "purple", lwd=4, ylim = c(0,1),
+     main = "power graph!!!!", xlab = "Sample size", ylab = "Power!!!")
+
+#(b)
+power.anova.test(groups = 4, between.var = var(c(21,23,25,27)),within.var=4.7^2, sig.level = 0.05, power = 0.85)
+
+#(c)
+powerC <- power.anova.test(groups = 4, between.var = var(c(27,25,23,21)),within.var=4.7^2, n = nint)
+plot(nint,powerA$power, type ="l", col = "purple", lwd=4, ylim = c(0,1),
+     main = "power graph!!!!", xlab = "Sample size", ylab = "Power!!!")
+lines(powerC$n, powerC$power, lwd = 2, col = "red")
+
+#(d)
+powerD <- power.anova.test(groups = 4, between.var = var(c(21,21,21,27)),within.var=4.7^2, n = nint)
+lines(powerD$n, powerD$power, lwd = 2, col = "blue")
+#(e) - I will let you try it
+
+# Interaction plot
+wear <- read.csv(file = "wear.csv", header = TRUE)
+wear
+
+as.factor(wear$prop)
+as.factor(wear$filler)
+
+interaction.plot(wear$prop, wear$filler, wear$wear1)
+interaction.plot(wear$filler,wear$prop,wear$wear1)
+
+wear.lm <- lm(wear1 ~ prop + filler + prop*filler, data = wear)
+anova(wear.lm)
